@@ -11,7 +11,7 @@ import komamripy as koma
 
 sys = koma.Scanner()
 obj = koma.brain_2dphantom()
-seq = koma.PulseDesigner.EPI_example() # This doesnt do anything
+seq = koma.PulseDesigner.EPI_example()
 
 raw = koma.simulate(obj, seq, sys)
 ```
