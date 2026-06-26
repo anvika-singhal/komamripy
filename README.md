@@ -69,6 +69,8 @@ raw = km.simulate(obj, seq, sys)
 ## Status
 
 `komamripy` is under active development as a Google Summer of Code project.
+
 Currently supported: the core simulation pipeline and reading Pulseq files.
+
 Planned: PyPI releases, GPU backend selection, tighter pypulseq integration,
 and differentiable workflows.
