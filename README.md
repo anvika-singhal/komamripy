@@ -8,6 +8,8 @@ Julia framework for MRI simulation. It exposes KomaMRI to Python through
 [juliacall](https://juliapy.github.io/PythonCall.jl/stable/juliacall/), so
 Python users can run fast CPU/GPU MRI simulations without writing any Julia.
 
+[![CI](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml)
+
 ## Installation
 
 Install by using [uv](https://docs.astral.sh/uv/) (recommended) or pip (remove uv):
