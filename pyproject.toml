@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [
-    { name = "Carlos Castillo Passi", email = "cncastillo@uc.cl" },
+    { name = "Carlos Castillo Passi", email = "cacp@stanford.edu" },
     { name = "Anvika Singhal" },
 ]
 keywords = ["MRI", "simulation", "Pulseq", "KomaMRI", "Julia", "medical-imaging"]
