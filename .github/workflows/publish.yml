@@ -1,5 +1,6 @@
 name: Publish
 
+# Does not pin updated dependencies, full manual release
 # Manual release: triggered by pushing a version tag
 
 on:

@@ -1,4 +1,6 @@
-"""Integration tests that exercise the Julia/KomaMRI backend end to end."""
+"""Integration tests that exercise the Julia/KomaMRI backend end to end.
+   Thorough tests to check functionality.
+"""
 
 import numpy as np
 
