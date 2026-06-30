@@ -26,28 +26,54 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        # Floor + current latest stable. uv has no "latest" wildcard, so bump
-        # the ceiling by hand when a new stable Python is released.
-        python-version: ["3.10", "3.13"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.10"
+            python-provider: uv
+          - os: windows-latest
+            python-version: "3.10"
+            python-provider: setup-python # uv's Windows 3.10 build resolves an OpenSSL 1.1 Julia stack.
+          - os: macos-latest
+            python-version: "3.10"
+            python-provider: uv
+          - os: ubuntu-latest
+            python-version: "3.14"
+            python-provider: uv
+          - os: windows-latest
+            python-version: "3.14"
+            python-provider: uv
+          - os: macos-latest
+            python-version: "3.14"
+            python-provider: uv
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v6
+        if: matrix.python-provider == 'setup-python'
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+          check-latest: true
+
       - uses: astral-sh/setup-uv@v5
 
-      # uv provides Python (incl. macOS arm64 builds for old versions that
-      # actions/setup-python lacks), so this works uniformly across all OSes.
       - name: Install Python ${{ matrix.python-version }}
+        if: matrix.python-provider == 'uv'
         run: uv python install ${{ matrix.python-version }}
 
       - name: Cache Julia depot
         uses: actions/cache@v4
         with:
           path: ~/.julia
-          key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}-uv
+          key: julia-v5-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.python-provider }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
-      - name: Install package and test tools
-        run: uv sync --group test --python ${{ matrix.python-version }}
+      - name: Install package and test tools (setup-python)
+        if: matrix.python-provider == 'setup-python'
+        run: uv sync --group test --python ${{ steps.setup-python.outputs.python-path }}
+
+      - name: Install package and test tools (uv Python)
+        if: matrix.python-provider == 'uv'
+        run: uv sync --managed-python --group test --python ${{ matrix.python-version }}
 
       - name: Run tests
-        run: uv run --group test --python ${{ matrix.python-version }} pytest -v
+        run: uv run --group test pytest -s -v
