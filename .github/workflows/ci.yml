@@ -27,16 +27,18 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        # Floor + current latest stable. uv has no "latest" wildcard, so bump
+        # the ceiling by hand when a new stable Python is released.
         python-version: ["3.10", "3.13"]
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - uses: astral-sh/setup-uv@v5
+
+      # uv provides Python (incl. macOS arm64 builds for old versions that
+      # actions/setup-python lacks), so this works uniformly across all OSes.
+      - name: Install Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Cache Julia depot
         uses: actions/cache@v4
@@ -44,14 +46,8 @@ jobs:
           path: ~/.julia
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
-      # Pin uv to the interpreter setup-python resolved, so the matrix version
-      # is actually the one tested
       - name: Install package and test tools
-        env:
-          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
-        run: uv sync --group test
+        run: uv sync --group test --python ${{ matrix.python-version }}
 
       - name: Run tests
-        env:
-          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
-        run: uv run --group test pytest -v
+        run: uv run --group test --python ${{ matrix.python-version }} pytest -v
