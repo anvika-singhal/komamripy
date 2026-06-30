@@ -45,7 +45,7 @@ jobs:
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
       # Pin uv to the interpreter setup-python resolved, so the matrix version
-      # is actually the one tested (otherwise uv may select its own Python).
+      # is actually the one tested
       - name: Install package and test tools
         env:
           UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
