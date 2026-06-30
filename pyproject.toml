@@ -1,10 +1,12 @@
 [project]
 name = "komamripy"
 version = "0.0.1"
+
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
-requires-python = ">=3.9"
-license = { text = "MIT" }
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Carlos Castillo Passi", email = "cacp@stanford.edu" },
     { name = "Anvika Singhal" },
@@ -27,6 +29,10 @@ Homepage = "https://github.com/JuliaHealth/komamripy"
 Repository = "https://github.com/JuliaHealth/komamripy"
 Issues = "https://github.com/JuliaHealth/komamripy/issues"
 
+[dependency-groups]
+test = ["pytest", "numpy"]
+lint = ["ruff"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -36,3 +42,6 @@ packages = ["komamripy"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "B", "UP"]
+
+[tool.hatch.version]
+path = "komamripy/__init__.py"
