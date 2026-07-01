@@ -21,18 +21,41 @@ jobs:
         run: uv run --group lint ruff format --check .
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    name: Test (Python ${{ matrix.python-version }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      # Python coverage (floor + ceiling) runs on Linux; Windows and macOS each
+      # run once at the ceiling. OS bugs are Python-version-independent and
+      # Python bugs are OS-independent, so this covers both axes without the
+      # full 3x2 cross-product -- and the floor never lands on the OS/old-Python
+      # cells that needed special handling, so one install path works for all.
       matrix:
-        python-version: ["3.10", "3.x"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.10"
+          - os: ubuntu-latest
+            python-version: "3.14"
+          - os: macos-latest
+            python-version: "3.14"
+          - os: windows-latest
+            python-version: "3.14"
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
+          check-latest: true
+
+      # Install a known-good Julia and force juliacall to use it (see
+      # PYTHON_JULIAPKG_EXE below), so it doesn't pick a runner Julia with
+      # broken embed paths.
+      - uses: julia-actions/setup-julia@v3
+        id: setup-julia
+        with:
+          version: "1.11"
 
       - uses: astral-sh/setup-uv@v5
 
@@ -43,7 +66,11 @@ jobs:
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
       - name: Install package and test tools
-        run: uv sync --group test
+        run: uv sync --group test --python "${{ steps.setup-python.outputs.python-path }}"
 
       - name: Run tests
-        run: uv run --group test pytest -v
+        env:
+          # Point juliapkg at the Julia installed above (full exe path, so
+          # juliacall can derive its bindir), instead of selecting a runner one.
+          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '\julia.exe' || '/julia' }}
+        run: uv run --group test pytest -v -s

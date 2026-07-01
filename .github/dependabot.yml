@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Keep GitHub Actions versions (checkout, setup-uv, cache, etc.) up to date.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      # Bundle all action bumps into one PR instead of one PR per action.
+      actions:
+        patterns:
+          - "*"
