@@ -70,7 +70,7 @@ jobs:
 
       - name: Run tests
         env:
-          # Point juliacall at the Julia installed above by its bindir, so it
-          # uses that exact Julia rather than selecting a runner one.
-          PYTHON_JULIACALL_BINDIR: ${{ steps.setup-julia.outputs.julia-bindir }}
+          # Point juliapkg at the Julia installed above (full exe path, so
+          # juliacall can derive its bindir), instead of selecting a runner one.
+          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '\julia.exe' || '/julia' }}
         run: uv run --group test pytest -v -s
