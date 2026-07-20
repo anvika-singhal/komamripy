@@ -15,21 +15,21 @@ jobs:
       pull-requests: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v3
         with:
           version: '~1.10'
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.14'
 
       - name: Run dependency update script
         id: update
-        run: python scripts/update_deps.py
+        run: python scripts/update_deps.py > "$RUNNER_TEMP/pr_body.txt"
 
       - name: Check if updates were found
         id: check
@@ -47,26 +47,15 @@ jobs:
           VERSION=$(grep '^version = ' pyproject.toml | grep -oP '\d+\.\d+\.\d+')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build PR body with version changes
-        if: steps.check.outputs.changed == 'true'
-        id: pr_body
-        run: |
-          {
-            echo "## Version Changes"
-            echo ""
-            git diff src/komamripy/juliapkg.json | grep -E '^\+.*version|^-.*version' | sed 's/^+/→ /' | sed 's/^-/← /'
-          } > pr_body.txt
-          cat pr_body.txt
-
       - name: Create pull request
         if: steps.check.outputs.changed == 'true'
         id: cpr
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.AUTOMATION_TOKEN }}
           commit-message: 'chore: update KomaMRI dependencies'
           title: '[auto] Bump to version ${{ steps.version.outputs.version }}'
-          body-path: pr_body.txt
+          body-path: ${{ runner.temp }}/pr_body.txt
           branch: update-koma-deps
           delete-branch: true
           labels: 'dependencies'
