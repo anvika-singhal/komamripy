@@ -81,3 +81,4 @@ for example in examples:
         print(f"  v0.0.6: {v066:.3f}s")
         print(f"  v0.0.7: {v067:.3f}s")
         print(f"  Speedup: {speedup:.2f}x")
+        
