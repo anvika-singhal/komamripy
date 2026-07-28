@@ -7,6 +7,7 @@ Julia code translates to Python almost line for line.
 Julia::
 
     using KomaMRI
+    using CUDA  # Load GPU backend
     sys = Scanner()
     obj = brain_phantom2D()
     seq = PulseDesigner.EPI_example()
@@ -18,6 +19,7 @@ Python::
     import komamripy as km
     import numpy as np
 
+    km.load_cuda()  # Load GPU backend
     sys = km.Scanner()
     obj = km.brain_phantom2D()
     seq = km.PulseDesigner.EPI_example()
@@ -26,9 +28,18 @@ Python::
 
 Simulation results are returned as Julia objects; use ``numpy.asarray`` to
 convert array-like results (such as a ``"mat"`` signal) into NumPy arrays.
+
+GPU backends can be loaded with:
+- km.load_cuda()      # NVIDIA GPUs
+- km.load_metal()     # Apple Silicon
+- km.load_amdgpu()    # AMD GPUs
+- km.load_oneapi()    # Intel GPUs (experimental)
+
+Once a backend is loaded, gpu=true is used by default in simulations.
 """
 
 from ._session import get_julia
+from ._backends import load_cuda, load_metal, load_amdgpu, load_oneapi
 
 _JULIA_MODULE_ALIASES = {
     "base": "KomaMRIBase",
@@ -63,3 +74,4 @@ def __getattr__(name):
         raise AttributeError(
             f"module 'komamripy' has no attribute '{name}'; KomaMRI does not expose it"
         ) from exc
+        
