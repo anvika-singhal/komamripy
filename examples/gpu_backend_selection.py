@@ -1,58 +1,27 @@
-"""Simulate MRI acquisition with optional GPU acceleration.
+"""Simulate MRI acquisition with optional GPU backend acceleration.
 
-This example demonstrates GPU backend selection:
-- Uncomment km.load_cuda() (or load_metal/load_amdgpu/load_oneapi) to enable GPU
-- Once a backend is loaded, gpu=true is used by default
-- Without a backend, simulation runs on CPU automatically
-
-The simulation produces identical results on CPU and GPU (within numerical precision).
+This example demonstrates GPU backend selection. Uncomment one of the backend
+load functions to enable GPU acceleration (CUDA, Metal, AMDGPU, or oneAPI).
+Without a backend, simulation runs on CPU automatically.
 """
 
 import numpy as np
 
 import komamripy as km
 
-# Optional: Load a GPU backend to enable GPU acceleration.
+# Optional: Load a GPU backend to enable GPU acceleration
 # Uncomment ONE of these (backend must be installed):
 # km.load_cuda()      # NVIDIA GPUs
 # km.load_metal()     # Apple Silicon
 # km.load_amdgpu()    # AMD GPUs
 # km.load_oneapi()    # Intel GPUs (experimental)
 
-# If no backend is loaded, simulation runs on CPU automatically.
-
-print("Creating phantom...")
-coords = np.linspace(-40e-3, 40e-3, 64)
-xx, yy = np.meshgrid(coords, coords)
-radius = np.sqrt(xx**2 + yy**2)
-mask = radius <= 32e-3
-
-x = xx[mask]
-y = yy[mask]
-z = np.zeros_like(x)
-
-phantom = km.Phantom(
-    name="circle",
-    x=x,
-    y=y,
-    z=z,
-    ρ=np.ones_like(x),
-    T1=np.ones_like(x),
-    T2=0.1 * np.ones_like(x),
-    T2s=0.1 * np.ones_like(x),
-)
-
-print("Setting up acquisition...")
+# Define acquisition inputs
 sys = km.Scanner()
+obj = km.brain_phantom2D()
 seq = km.PulseDesigner.EPI_example()
 
-print("Simulating...")
-sim_params = {"return_type": "mat"}  # gpu=true by default if backend loaded
-signal = km.simulate(phantom, seq, sys, sim_params=sim_params)
+# Simulate with KomaMRI (gpu=true by default if backend loaded)
+sim_params = {"return_type": "mat"}
+signal = km.simulate(obj, seq, sys, sim_params=sim_params)
 signal = np.asarray(signal).reshape(-1)
-
-print("Simulation complete!")
-print(f"Signal shape: {signal.shape}")
-signal_min = np.abs(signal).min()
-signal_max = np.abs(signal).max()
-print(f"Signal magnitude range: [{signal_min:.2e}, {signal_max:.2e}]")

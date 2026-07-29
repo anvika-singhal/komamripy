@@ -37,6 +37,8 @@ minutes. Subsequent runs are fast.
 import komamripy as km
 import numpy as np
 
+km.load_cuda()  # GPU backend selection, optional
+
 sys = km.Scanner()  # scanner hardware
 obj = km.brain_phantom2D()  # 2D brain phantom
 seq = km.PulseDesigner.EPI_example()  # example EPI sequence
