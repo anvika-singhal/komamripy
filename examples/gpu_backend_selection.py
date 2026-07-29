@@ -11,7 +11,7 @@ import komamripy as km
 
 # Optional: Load a GPU backend to enable GPU acceleration
 # Uncomment ONE of these (backend must be installed):
-# km.load_cuda()      # NVIDIA GPUs
+km.load_cuda()      # NVIDIA GPUs
 # km.load_metal()     # Apple Silicon
 # km.load_amdgpu()    # AMD GPUs
 # km.load_oneapi()    # Intel GPUs (experimental)
