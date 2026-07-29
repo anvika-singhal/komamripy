@@ -34,4 +34,3 @@ def load_oneapi() -> None:
     """Load oneAPI backend: using oneAPI (experimental)"""
     jl = get_julia()
     jl.seval("using oneAPI")
-    

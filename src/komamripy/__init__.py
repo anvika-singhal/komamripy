@@ -76,4 +76,3 @@ def __getattr__(name):
         raise AttributeError(
             f"module 'komamripy' has no attribute '{name}'; KomaMRI does not expose it"
         ) from exc
-        
