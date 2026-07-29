@@ -38,8 +38,10 @@ GPU backends can be loaded with:
 Once a backend is loaded, gpu=true is used by default in simulations.
 """
 
+from ._backends import load_amdgpu, load_cuda, load_metal, load_oneapi
 from ._session import get_julia
-from ._backends import load_cuda, load_metal, load_amdgpu, load_oneapi
+
+__all__ = ["load_cuda", "load_metal", "load_amdgpu", "load_oneapi"]
 
 _JULIA_MODULE_ALIASES = {
     "base": "KomaMRIBase",

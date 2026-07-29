@@ -51,6 +51,8 @@ sim_params = {"return_type": "mat"}  # gpu=true by default if backend loaded
 signal = km.simulate(phantom, seq, sys, sim_params=sim_params)
 signal = np.asarray(signal).reshape(-1)
 
-print(f"Simulation complete!")
+print("Simulation complete!")
 print(f"Signal shape: {signal.shape}")
-print(f"Signal magnitude range: [{np.abs(signal).min():.2e}, {np.abs(signal).max():.2e}]")
+signal_min = np.abs(signal).min()
+signal_max = np.abs(signal).max()
+print(f"Signal magnitude range: [{signal_min:.2e}, {signal_max:.2e}]")
