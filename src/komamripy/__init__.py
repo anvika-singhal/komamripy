@@ -8,7 +8,7 @@ Julia::
 
     using KomaMRI
     using CUDA  # Load GPU backend
-    
+
     sys = Scanner()
     obj = brain_phantom2D()
     seq = PulseDesigner.EPI_example()
